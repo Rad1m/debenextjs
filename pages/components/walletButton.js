@@ -1,19 +1,16 @@
-import * as React from "react";
-import Web3 from "web3";
 import Web3Modal from "web3modal";
 import { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import WalletConnectProvider from "@walletconnect/web3-provider";
-import { injected } from "./connectors";
-import Button from "@mui/material/Button";
-import Tooltip from "@mui/material/Tooltip";
 
+const INFURA_ID = process.env.WEB3_INFURA_PROJECT_ID;
 let web3Modal;
 
 const providerOptions = {
   walletconnect: {
     package: WalletConnectProvider, // required
     options: {
+      infuraId: INFURA_ID, // required
       rpc: { 42: process.env.NEXT_PUBLIC_RPC_URL }, // required
     },
   },
@@ -21,7 +18,7 @@ const providerOptions = {
 
 if (typeof window !== "undefined") {
   web3Modal = new Web3Modal({
-    cacheProvider: false,
+    cacheProvider: true,
     providerOptions, // required
   });
 }
@@ -30,7 +27,7 @@ export default function WalletButton() {
   const [isConnected, setIsConnected] = useState(false);
   const [hasMetamask, setHasMetamask] = useState(false);
   const [signer, setSigner] = useState(undefined);
-  const [address, setAddress] = useState(undefined);
+  const [walletAddr, setwalletAddr] = useState(undefined);
 
   useEffect(() => {
     if (typeof window.ethereum !== "undefined") {
@@ -45,7 +42,7 @@ export default function WalletButton() {
         setIsConnected(true);
         const provider = new ethers.providers.Web3Provider(web3ModalProvider);
         setSigner(provider.getSigner());
-        setAddress(await signer.getAddress());
+        setwalletAddr(await signer.getAddress());
       } catch (e) {
         console.log(e);
       }
@@ -58,22 +55,13 @@ export default function WalletButton() {
     <div>
       {hasMetamask ? (
         isConnected ? (
-          "Address"
+          "Connected! "
         ) : (
-          <Tooltip title="Connect wallet">
-            <Button
-              variant="contained"
-              sx={{ mx: 2 }}
-              onClick={() => connect()}
-            >
-              Connect
-            </Button>
-          </Tooltip>
+          <button onClick={() => connect()}>Connect</button>
         )
       ) : (
         "Please install metamask"
       )}
-      {isConnected ? <button onClick={() => execute()}>Execute</button> : ""}
     </div>
   );
 }
