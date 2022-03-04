@@ -18,6 +18,13 @@ const providerOptions = {
   },
 };
 
+if (typeof window !== "undefined") {
+  web3Modal = new Web3Modal({
+    cacheProvider: true,
+    providerOptions, // required
+  });
+}
+
 export default function WalletButton() {
   const [isConnected, setIsConnected] = useState(false);
   const [hasMetamask, setHasMetamask] = useState(false);
@@ -31,14 +38,21 @@ export default function WalletButton() {
   });
 
   async function connect() {
-    const web3Modal = new Web3Modal();
-    const web3ModalProvider = await web3Modal.connect();
-    setIsConnected(true);
-    const provider = new ethers.providers.Web3Provider(web3ModalProvider);
-    const signer = provider.getSigner();
-    setSigner(signer);
-    const walletAddr = await signer.getAddress();
-    setwalletAddr(walletAddr);
+    if (typeof window.ethereum !== "undefined") {
+      try {
+        const web3ModalProvider = await web3Modal.connect();
+        setIsConnected(true);
+        const provider = new ethers.providers.Web3Provider(web3ModalProvider);
+        const signer = provider.getSigner();
+        setSigner(signer);
+        const walletAddr = await signer.getAddress();
+        setwalletAddr(walletAddr);
+      } catch (e) {
+        console.log(e);
+      }
+    } else {
+      setIsConnected(false);
+    }
   }
 
   return (
