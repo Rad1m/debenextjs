@@ -107,9 +107,13 @@ const ResponsiveAppBar = () => {
           <Box display="flex" justifyContent="flex-end">
             <WalletButton />
             <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+              <Button
+                onClick={handleOpenUserMenu}
+                variant="contained"
+                sx={{ p: 0 }}
+              >
                 Menu
-              </IconButton>
+              </Button>
             </Tooltip>
             <Menu
               sx={{ mt: "45px" }}
