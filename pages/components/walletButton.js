@@ -1,12 +1,10 @@
-import * as React from "react";
-import Web3 from "web3";
 import Web3Modal from "web3modal";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import WalletConnectProvider from "@walletconnect/web3-provider";
-import { injected } from "./connectors";
 import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
+import { ellipseAddress } from "../helpers/utilities";
 
 let web3Modal;
 
@@ -14,7 +12,7 @@ const providerOptions = {
   walletconnect: {
     package: WalletConnectProvider, // required
     options: {
-      rpc: { 42: process.env.NEXT_PUBLIC_RPC_URL }, // required
+      rpc: { 42: process.env.API_KOVAN_URL }, // required
     },
   },
 };
@@ -26,11 +24,11 @@ if (typeof window !== "undefined") {
   });
 }
 
-export default function WalletButton() {
+export default function WalletConnect() {
   const [isConnected, setIsConnected] = useState(false);
   const [hasMetamask, setHasMetamask] = useState(false);
   const [signer, setSigner] = useState(undefined);
-  const [address, setAddress] = useState(undefined);
+  const [walletAddr, setwalletAddr] = useState("");
 
   useEffect(() => {
     if (typeof window.ethereum !== "undefined") {
@@ -44,8 +42,10 @@ export default function WalletButton() {
         const web3ModalProvider = await web3Modal.connect();
         setIsConnected(true);
         const provider = new ethers.providers.Web3Provider(web3ModalProvider);
-        setSigner(provider.getSigner());
-        setAddress(await signer.getAddress());
+        const signer = provider.getSigner();
+        setSigner(signer);
+        const walletAddr = await signer.getAddress();
+        setwalletAddr(walletAddr);
       } catch (e) {
         console.log(e);
       }
@@ -58,11 +58,14 @@ export default function WalletButton() {
     <div>
       {hasMetamask ? (
         isConnected ? (
-          "Address"
+          <Button variant="contained" color="success" sx={{ mx: 2 }}>
+            {ellipseAddress("" + walletAddr.toString(), 6)}
+          </Button>
         ) : (
           <Tooltip title="Connect wallet">
             <Button
               variant="contained"
+              color="secondary"
               sx={{ mx: 2 }}
               onClick={() => connect()}
             >
@@ -71,9 +74,10 @@ export default function WalletButton() {
           </Tooltip>
         )
       ) : (
-        "Please install metamask"
+        <Button variant="contained" color="error" sx={{ mx: 2 }}>
+          Install metamask
+        </Button>
       )}
-      {isConnected ? <button onClick={() => execute()}>Execute</button> : ""}
     </div>
   );
 }

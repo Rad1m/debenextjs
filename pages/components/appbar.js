@@ -7,7 +7,6 @@ import Typography from "@mui/material/Typography";
 import Menu from "@mui/material/Menu";
 import MenuIcon from "@mui/icons-material/Menu";
 import Container from "@mui/material/Container";
-import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
@@ -107,9 +106,13 @@ const ResponsiveAppBar = () => {
           <Box display="flex" justifyContent="flex-end">
             <WalletButton />
             <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
-              </IconButton>
+              <Button
+                onClick={handleOpenUserMenu}
+                variant="contained"
+                sx={{ p: 0 }}
+              >
+                Menu
+              </Button>
             </Tooltip>
             <Menu
               sx={{ mt: "45px" }}
