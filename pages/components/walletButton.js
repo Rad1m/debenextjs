@@ -1,35 +1,34 @@
 import Web3Modal from "web3modal";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
+import { ellipseAddress } from "../helpers/utilities";
 
-const INFURA_ID = process.env.WEB3_INFURA_PROJECT_ID;
 let web3Modal;
 
 const providerOptions = {
   walletconnect: {
     package: WalletConnectProvider, // required
     options: {
-      infuraId: INFURA_ID, // required
-      rpc: { 42: process.env.NEXT_PUBLIC_RPC_URL }, // required
+      rpc: { 42: process.env.API_KOVAN_URL }, // required
     },
   },
 };
 
 if (typeof window !== "undefined") {
   web3Modal = new Web3Modal({
-    cacheProvider: true,
+    cacheProvider: false,
     providerOptions, // required
   });
 }
 
-export default function WalletButton() {
+export default function WalletConnect() {
   const [isConnected, setIsConnected] = useState(false);
   const [hasMetamask, setHasMetamask] = useState(false);
   const [signer, setSigner] = useState(undefined);
-  const [walletAddr, setwalletAddr] = useState(undefined);
+  const [walletAddr, setwalletAddr] = useState("");
 
   useEffect(() => {
     if (typeof window.ethereum !== "undefined") {
@@ -59,12 +58,14 @@ export default function WalletButton() {
     <div>
       {hasMetamask ? (
         isConnected ? (
-          <h3>"Connected! " + {walletAddr}</h3>
+          <Button variant="contained" color="success" sx={{ mx: 2 }}>
+            {ellipseAddress("" + walletAddr.toString(), 6)}
+          </Button>
         ) : (
           <Tooltip title="Connect wallet">
             <Button
               variant="contained"
-              color="success"
+              color="secondary"
               sx={{ mx: 2 }}
               onClick={() => connect()}
             >
