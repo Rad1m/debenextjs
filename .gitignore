@@ -11,10 +11,6 @@
 # next.js
 /out
 .next/
-.next/trace
-.next/cache/
-.next/server/
-.next/static/
 
 # production
 /build
