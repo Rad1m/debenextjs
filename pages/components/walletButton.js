@@ -6,7 +6,7 @@ import { Web3Provider } from "@ethersproject/providers";
 import {
   Web3ReactProvider,
   useWeb3React,
-  UnsupportedChainIdError
+  UnsupportedChainIdError,
 } from "@web3-react/core";
 import { ethers } from "ethers";
 import WalletConnectProvider from "@walletconnect/web3-provider";
@@ -14,26 +14,29 @@ import { WalletConnectConnector } from "@web3-react/walletconnect-connector";
 import {
   InjectedConnector,
   NoEthereumProviderError,
-  UserRejectedRequestError as UserRejectedRequestErrorInjected
+  UserRejectedRequestError as UserRejectedRequestErrorInjected,
 } from "@web3-react/injected-connector";
 
 // Import MUI.com
 import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import wcIcon from "../../icons/walletconnect-logo.svg";
+import mmIcon from "../../icons/mm-logo.svg";
 
 // import helpers
 import { ellipseAddress } from "../helpers/utilities";
 
 export const injected = new InjectedConnector();
 
-export const walletconnect = new WalletConnectProvider({
-  infuraId: "27e484dcd9e3efcfd25a83a78777cdf1",
+export const provider = new WalletConnectProvider({
+  infuraId: process.env.WEB3_INFURA_PROJECT_ID,
   rpc: { 42: process.env.API_KOVAN_URL }, // required
   network: "kovan",
   qrcode: true,
   pollingInterval: 15000,
 });
-
 
 function WalletButton() {
   const {
@@ -44,21 +47,26 @@ function WalletButton() {
     activate,
     deactivate,
     active,
-    error
+    error,
   } = useWeb3React();
 
+  // select a wallet here
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = async () => {
+    setAnchorEl(null);
+    connectInjected();
+  };
+
+  const handleClose2 = async () => {
+    connectWalletConnect();
+    setAnchorEl(null);
+  };
+
   // connect wallet
-  async function connect() {
-    // first we check for metamask
-    // if no metamask then wallet connect
-    if (typeof window.ethereum !== "undefined") {
-      connectInjected();
-    } else {
-      connectWalletConnect();
-    }
-  }
-
-
   const connectInjected = async () => {
     try {
       await activate(injected);
@@ -68,10 +76,9 @@ function WalletButton() {
   };
 
   const connectWalletConnect = async () => {
-    await walletconnect.enable();
+    await provider.enable();
     try {
-      await activate(walletconnect);
-      console.log("Activate walletconnect");
+      await activate(provider);
     } catch (ex) {
       console.log(ex);
     }
@@ -94,16 +101,32 @@ function WalletButton() {
           </Button>
         </Tooltip>
       ) : (
-        <Tooltip title="Connect wallet">
+        <div>
           <Button
             variant="contained"
             color="secondary"
             sx={{ mx: 2 }}
-            onClick={connect}
+            id="basic-button"
+            aria-controls={open ? "basic-menu" : undefined}
+            aria-haspopup="true"
+            aria-expanded={open ? "true" : undefined}
+            onClick={handleClick}
           >
             Connect
           </Button>
-        </Tooltip>
+          <Menu
+            id="basic-menu"
+            anchorEl={anchorEl}
+            open={open}
+            onClose={handleClose}
+            MenuListProps={{
+              "aria-labelledby": "basic-button",
+            }}
+          >
+            <MenuItem onClick={handleClose}>Metamask</MenuItem>
+            <MenuItem onClick={handleClose2}>WalletConnect</MenuItem>
+          </Menu>
+        </div>
       )}
     </div>
   );
