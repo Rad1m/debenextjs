@@ -76,8 +76,8 @@ function WalletButton() {
   };
 
   const connectWalletConnect = async () => {
-    await provider.enable();
     try {
+      await provider.enable();
       await activate(provider);
     } catch (ex) {
       console.log(ex);
