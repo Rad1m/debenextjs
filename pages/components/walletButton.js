@@ -22,11 +22,14 @@ import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import Alert from '@mui/material/Alert';
+
 import wcIcon from "../../icons/walletconnect-logo.svg";
 import mmIcon from "../../icons/mm-logo.svg";
 
 // import helpers
 import { ellipseAddress } from "../helpers/utilities";
+import { Snackbar } from "@mui/material";
 
 export const injected = new InjectedConnector();
 
@@ -53,15 +56,20 @@ function WalletButton() {
   // select a wallet here
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
+
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
   const handleClose = async () => {
     setAnchorEl(null);
+  };
+
+  const handleMetamask = async () => {
+    setAnchorEl(null);
     connectInjected();
   };
 
-  const handleClose2 = async () => {
+  const handleWalletConect = async () => {
     connectWalletConnect();
     setAnchorEl(null);
   };
@@ -70,6 +78,7 @@ function WalletButton() {
   const connectInjected = async () => {
     try {
       await activate(injected);
+      <Alert severity="success">This is a success alert — check it out!</Alert>
     } catch (ex) {
       console.log(ex);
     }
@@ -78,7 +87,7 @@ function WalletButton() {
   const connectWalletConnect = async () => {
     try {
       await provider.enable();
-      await activate(provider);
+      // await activate(provider);
     } catch (ex) {
       console.log(ex);
     }
@@ -95,11 +104,29 @@ function WalletButton() {
   return (
     <div>
       {active ? (
-        <Tooltip title="Open settings">
-          <Button variant="contained" color="success" sx={{ mx: 2 }}>
+        <div>
+        <Button
+          variant="contained"
+          color="success" sx={{ mx: 2 }}
+          id="basic-button"
+          aria-controls={open ? "basic-menu" : undefined}
+          aria-haspopup="true"
+          aria-expanded={open ? "true" : undefined}
+          onClick={handleClick}>
             {ellipseAddress("" + account.toString(), 6)}
-          </Button>
-        </Tooltip>
+        </Button>
+        <Menu
+          id="basic-menu"
+          anchorEl={anchorEl}
+          open={open}
+          onClose={handleClose}
+          MenuListProps={{
+            "aria-labelledby": "basic-button",
+          }}>
+          <MenuItem onClick={disconnect}>Log Out</MenuItem>
+        </Menu>
+        
+        </div>
       ) : (
         <div>
           <Button
@@ -123,8 +150,8 @@ function WalletButton() {
               "aria-labelledby": "basic-button",
             }}
           >
-            <MenuItem onClick={handleClose}>Metamask</MenuItem>
-            <MenuItem onClick={handleClose2}>WalletConnect</MenuItem>
+            <MenuItem onClick={handleMetamask}>Metamask</MenuItem>
+            <MenuItem onClick={handleWalletConect}>WalletConnect</MenuItem>
           </Menu>
         </div>
       )}
