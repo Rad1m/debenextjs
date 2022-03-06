@@ -1,83 +1,111 @@
-import Web3Modal from "web3modal";
 import React, { useState, useEffect } from "react";
+
+// Import Web3
+import Web3 from "web3";
+import { Web3Provider } from "@ethersproject/providers";
+import {
+  Web3ReactProvider,
+  useWeb3React,
+  UnsupportedChainIdError
+} from "@web3-react/core";
 import { ethers } from "ethers";
 import WalletConnectProvider from "@walletconnect/web3-provider";
+import { WalletConnectConnector } from "@web3-react/walletconnect-connector";
+import {
+  InjectedConnector,
+  NoEthereumProviderError,
+  UserRejectedRequestError as UserRejectedRequestErrorInjected
+} from "@web3-react/injected-connector";
+
+// Import MUI.com
 import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
+
+// import helpers
 import { ellipseAddress } from "../helpers/utilities";
 
-let web3Modal;
+export const injected = new InjectedConnector();
 
-const providerOptions = {
-  walletconnect: {
-    package: WalletConnectProvider, // required
-    options: {
-      rpc: { 42: process.env.API_KOVAN_URL }, // required
-    },
-  },
-};
+export const walletconnect = new WalletConnectProvider({
+  infuraId: "27e484dcd9e3efcfd25a83a78777cdf1",
+  rpc: { 42: process.env.API_KOVAN_URL }, // required
+  network: "kovan",
+  qrcode: true,
+  pollingInterval: 15000,
+});
 
-if (typeof window !== "undefined") {
-  web3Modal = new Web3Modal({
-    cacheProvider: false,
-    providerOptions, // required
-  });
-}
 
-export default function WalletConnect() {
-  const [isConnected, setIsConnected] = useState(false);
-  const [hasMetamask, setHasMetamask] = useState(false);
-  const [signer, setSigner] = useState(undefined);
-  const [walletAddr, setwalletAddr] = useState("");
+function WalletButton() {
+  const {
+    connector,
+    library,
+    chainId,
+    account,
+    activate,
+    deactivate,
+    active,
+    error
+  } = useWeb3React();
 
-  useEffect(() => {
-    if (typeof window.ethereum !== "undefined") {
-      setHasMetamask(true);
-    }
-  });
-
+  // connect wallet
   async function connect() {
+    // first we check for metamask
+    // if no metamask then wallet connect
     if (typeof window.ethereum !== "undefined") {
-      try {
-        const web3ModalProvider = await web3Modal.connect();
-        setIsConnected(true);
-        const provider = new ethers.providers.Web3Provider(web3ModalProvider);
-        const signer = provider.getSigner();
-        setSigner(signer);
-        const walletAddr = await signer.getAddress();
-        setwalletAddr(walletAddr);
-      } catch (e) {
-        console.log(e);
-      }
+      connectInjected();
     } else {
-      setIsConnected(false);
+      connectWalletConnect();
+    }
+  }
+
+
+  const connectInjected = async () => {
+    try {
+      await activate(injected);
+    } catch (ex) {
+      console.log(ex);
+    }
+  };
+
+  const connectWalletConnect = async () => {
+    await walletconnect.enable();
+    try {
+      await activate(walletconnect);
+      console.log("Activate walletconnect");
+    } catch (ex) {
+      console.log(ex);
+    }
+  };
+
+  async function disconnect() {
+    try {
+      deactivate();
+    } catch (ex) {
+      console.log(ex);
     }
   }
 
   return (
     <div>
-      {hasMetamask ? (
-        isConnected ? (
+      {active ? (
+        <Tooltip title="Open settings">
           <Button variant="contained" color="success" sx={{ mx: 2 }}>
-            {ellipseAddress("" + walletAddr.toString(), 6)}
+            {ellipseAddress("" + account.toString(), 6)}
           </Button>
-        ) : (
-          <Tooltip title="Connect wallet">
-            <Button
-              variant="contained"
-              color="secondary"
-              sx={{ mx: 2 }}
-              onClick={() => connect()}
-            >
-              Connect
-            </Button>
-          </Tooltip>
-        )
+        </Tooltip>
       ) : (
-        <Button variant="contained" color="error" sx={{ mx: 2 }}>
-          Install metamask
-        </Button>
+        <Tooltip title="Connect wallet">
+          <Button
+            variant="contained"
+            color="secondary"
+            sx={{ mx: 2 }}
+            onClick={connect}
+          >
+            Connect
+          </Button>
+        </Tooltip>
       )}
     </div>
   );
 }
+export default WalletButton;

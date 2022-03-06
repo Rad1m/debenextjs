@@ -10,16 +10,22 @@ import "../styles/globals.css";
 
 const clientSideEmotionCache = createEmotionCache();
 
+const getLibrary = (provider) => {
+  return new Web3Provider(provider);
+};
+
 const MyApp = (props) => {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
 
   return (
-    <CacheProvider value={emotionCache}>
-      <ThemeProvider theme={lightTheme}>
-        <CssBaseline />
-        <Component {...pageProps} />
-      </ThemeProvider>
-    </CacheProvider>
+    <Web3ReactProvider getLibrary={getLibrary}>
+      <CacheProvider value={emotionCache}>
+        <ThemeProvider theme={lightTheme}>
+          <CssBaseline />
+          <Component {...pageProps} />
+        </ThemeProvider>
+      </CacheProvider>
+    </Web3ReactProvider>
   );
 };
 
