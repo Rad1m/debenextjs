@@ -26,7 +26,10 @@ const ResponsiveAppBar = () => {
   };
 
   return (
-    <AppBar position="static">
+    <AppBar
+      position="static"
+      sx={{ background: "linear-gradient(to right bottom, #008000, #000000)" }}
+    >
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <Typography

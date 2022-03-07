@@ -22,7 +22,7 @@ import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import Alert from '@mui/material/Alert';
+import Alert from "@mui/material/Alert";
 
 import wcIcon from "../../icons/walletconnect-logo.svg";
 import mmIcon from "../../icons/mm-logo.svg";
@@ -78,7 +78,7 @@ function WalletButton() {
   const connectInjected = async () => {
     try {
       await activate(injected);
-      <Alert severity="success">This is a success alert — check it out!</Alert>
+      <Alert severity="success">This is a success alert — check it out!</Alert>;
     } catch (ex) {
       console.log(ex);
     }
@@ -105,33 +105,35 @@ function WalletButton() {
     <div>
       {active ? (
         <div>
-        <Button
-          variant="contained"
-          color="success" sx={{ mx: 2 }}
-          id="basic-button"
-          aria-controls={open ? "basic-menu" : undefined}
-          aria-haspopup="true"
-          aria-expanded={open ? "true" : undefined}
-          onClick={handleClick}>
+          <Button
+            variant="contained"
+            color="success"
+            sx={{ mx: 2 }}
+            id="basic-button"
+            aria-controls={open ? "basic-menu" : undefined}
+            aria-haspopup="true"
+            aria-expanded={open ? "true" : undefined}
+            onClick={handleClick}
+          >
             {ellipseAddress("" + account.toString(), 6)}
-        </Button>
-        <Menu
-          id="basic-menu"
-          anchorEl={anchorEl}
-          open={open}
-          onClose={handleClose}
-          MenuListProps={{
-            "aria-labelledby": "basic-button",
-          }}>
-          <MenuItem onClick={disconnect}>Log Out</MenuItem>
-        </Menu>
-        
+          </Button>
+          <Menu
+            id="basic-menu"
+            anchorEl={anchorEl}
+            open={open}
+            onClose={handleClose}
+            MenuListProps={{
+              "aria-labelledby": "basic-button",
+            }}
+          >
+            <MenuItem onClick={disconnect}>Log Out</MenuItem>
+          </Menu>
         </div>
       ) : (
         <div>
           <Button
             variant="contained"
-            color="secondary"
+            color="inverted"
             sx={{ mx: 2 }}
             id="basic-button"
             aria-controls={open ? "basic-menu" : undefined}
