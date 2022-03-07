@@ -34,7 +34,6 @@ const theme = createTheme({
     blond: {
       main: "#faf0be",
     },
-
   },
 });
 

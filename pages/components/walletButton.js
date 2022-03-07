@@ -22,14 +22,12 @@ import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import Alert from "@mui/material/Alert";
-
 import wcIcon from "../../icons/walletconnect-logo.svg";
 import mmIcon from "../../icons/mm-logo.svg";
+import { useSnackbar } from "notistack";
 
 // import helpers
 import { ellipseAddress } from "../helpers/utilities";
-import { Snackbar } from "@mui/material";
 
 export const injected = new InjectedConnector();
 
@@ -41,7 +39,13 @@ export const provider = new WalletConnectProvider({
   pollingInterval: 15000,
 });
 
+////////////////////////////////
+//  THE FUNCTION STARTS HERE  //
+////////////////////////////////
 function WalletButton() {
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+
+  // define walletconnect constants
   const {
     connector,
     library,
@@ -78,26 +82,30 @@ function WalletButton() {
   const connectInjected = async () => {
     try {
       await activate(injected);
-      <Alert severity="success">This is a success alert — check it out!</Alert>;
+      enqueueSnackbar("Metamask connected", { variant: "success" });
     } catch (ex) {
       console.log(ex);
+      enqueueSnackbar("Operation not successful", { variant: "error" });
     }
   };
 
   const connectWalletConnect = async () => {
     try {
       await provider.enable();
-      // await activate(provider);
+      enqueueSnackbar("Wallet connected", { variant: "success" });
     } catch (ex) {
       console.log(ex);
+      enqueueSnackbar("Operation not successful", { variant: "error" });
     }
   };
 
   async function disconnect() {
     try {
       deactivate();
+      enqueueSnackbar("Wallet disconnected", { variant: "warning" });
     } catch (ex) {
       console.log(ex);
+      enqueueSnackbar("Operation not successful", { variant: "error" });
     }
   }
 
