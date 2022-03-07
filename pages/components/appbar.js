@@ -8,7 +8,6 @@ import Menu from "@mui/material/Menu";
 import MenuIcon from "@mui/icons-material/Menu";
 import Container from "@mui/material/Container";
 import Button from "@mui/material/Button";
-import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import WalletButton from "./walletButton";
 
@@ -26,7 +25,10 @@ const ResponsiveAppBar = () => {
   };
 
   return (
-    <AppBar position="static">
+    <AppBar
+      position="static"
+      sx={{ background: "linear-gradient(to right bottom, #008000, #000000)" }}
+    >
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <Typography
