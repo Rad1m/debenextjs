@@ -1,29 +1,17 @@
 import React, { useState, useEffect } from "react";
 
 // Import Web3
-import Web3 from "web3";
-import { Web3Provider } from "@ethersproject/providers";
-import {
-  Web3ReactProvider,
-  useWeb3React,
-  UnsupportedChainIdError,
-} from "@web3-react/core";
-import { ethers } from "ethers";
+import { useWeb3React } from "@web3-react/core";
 import WalletConnectProvider from "@walletconnect/web3-provider";
-import { WalletConnectConnector } from "@web3-react/walletconnect-connector";
 import {
   InjectedConnector,
-  NoEthereumProviderError,
   UserRejectedRequestError as UserRejectedRequestErrorInjected,
 } from "@web3-react/injected-connector";
 
 // Import MUI.com
 import Button from "@mui/material/Button";
-import Tooltip from "@mui/material/Tooltip";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import wcIcon from "../../icons/walletconnect-logo.svg";
-import mmIcon from "../../icons/mm-logo.svg";
 import { useSnackbar } from "notistack";
 
 // import helpers
