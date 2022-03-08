@@ -22,7 +22,13 @@ export default function MyApp(props) {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
 
   return (
-    <SnackbarProvider maxSnack={3}>
+    <SnackbarProvider
+      maxSnack={3}
+      anchorOrigin={{
+        vertical: "bottom",
+        horizontal: "center",
+      }}
+    >
       <Web3ReactProvider getLibrary={getLibrary}>
         <CacheProvider value={emotionCache}>
           <Head>
